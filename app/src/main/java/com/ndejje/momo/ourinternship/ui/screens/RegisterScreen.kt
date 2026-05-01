@@ -1,4 +1,4 @@
-package com.ndejje.momo.ourinternship.view
+package com.ndejje.momo.ourinternship.ui.screens
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
@@ -96,7 +96,8 @@ fun RegisterScreen(
             .height(dimensionResource(R.dimen.buttonHeight)),
             enabled = authState !is MainViewModel.Loading) {
             if (authState is MainViewModel.Loading)
-                CircularProgressIndicator(Modifier.size(24.dp),
+                CircularProgressIndicator(
+                    size(24.dp),
                     color = MaterialTheme.colorScheme.onPrimary)
             else Text(stringResource(R.string.btn_register))
         }
