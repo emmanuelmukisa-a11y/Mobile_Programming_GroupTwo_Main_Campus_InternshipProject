@@ -11,9 +11,8 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.style.TextAlign
-import com.ndejje.momo.ourinternship.R
-import com.ndejje.momo.ourinternship.viewmodel.AuthUiState
-import com.ndejje.momo.ourinternship.viewmodel.AuthViewModel
+import com.ndejje.momo.ourinternship.ui.viewmodel.MainViewModel
+import com.ndejje.momo.ourinternship.ui.viewmodel.AuthViewModel
 
 @Composable
 fun LoginScreen(
@@ -26,8 +25,8 @@ fun LoginScreen(
     var passwordInput by remember { mutableStateOf("") }
 
     LaunchedEffect(authState) {
-        if (authState is AuthUiState.Success) {
-            onLoginSuccess((authState as AuthUiState.Success).username)
+        if (authState is MainViewModel.Success) {
+            onLoginSuccess((authState as MainViewModel.Success).username)
             viewModel.resetState()
         }
     }
@@ -57,8 +56,8 @@ fun LoginScreen(
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password))
         Spacer(Modifier.height(dimensionResource(R.dimen.spacingSmall)))
 
-        if (authState is AuthUiState.Error) {
-            Text((authState as AuthUiState.Error).message,
+        if (authState is MainViewModel.Error) {
+            Text((authState as MainViewModel.Error).message,
                 color = MaterialTheme.colorScheme.error,
                 style = MaterialTheme.typography.bodySmall)
             Spacer(Modifier.height(dimensionResource(R.dimen.spacingSmall)))
@@ -67,8 +66,8 @@ fun LoginScreen(
         Button(onClick = { viewModel.login(usernameInput, passwordInput) },
             modifier = Modifier.fillMaxWidth()
                 .height(dimensionResource(R.dimen.buttonHeight)),
-            enabled = authState !is AuthUiState.Loading) {
-            if (authState is AuthUiState.Loading)
+            enabled = authState !is MainViewModel.Loading) {
+            if (authState is MainViewModel.Loading)
                 CircularProgressIndicator(Modifier.size(24.dp),
                     color = MaterialTheme.colorScheme.onPrimary)
             else Text(stringResource(R.string.btn_login))

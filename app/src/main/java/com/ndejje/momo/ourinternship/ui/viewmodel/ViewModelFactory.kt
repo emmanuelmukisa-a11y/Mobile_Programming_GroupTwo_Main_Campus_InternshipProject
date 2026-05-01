@@ -1,10 +1,10 @@
-package com.ndejje.momo.ourinternship.viewmodel
+package com.ndejje.momo.ourinternship.ui.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.ndejje.momo.ourinternship.model.UserRepository
 
-class AuthViewModelFactory(
+class ViewModelFactory(
     private val repository: UserRepository
 ) : ViewModelProvider.Factory {
 
