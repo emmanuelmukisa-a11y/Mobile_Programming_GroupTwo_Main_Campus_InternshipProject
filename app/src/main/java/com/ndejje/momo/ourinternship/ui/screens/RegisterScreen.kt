@@ -13,7 +13,9 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.style.TextAlign
-import com.ndejje.momo.ourinternship.ui.viewmodel.MainViewModel
+import androidx.compose.ui.unit.dp
+import com.ndejje.momo.ourinternship.R
+import com.ndejje.momo.ourinternship.ui.viewmodel.AuthState
 import com.ndejje.momo.ourinternship.ui.viewmodel.AuthViewModel
 
 @Composable
@@ -22,88 +24,82 @@ fun RegisterScreen(
     onRegisterSuccess: (String) -> Unit,
     onNavigateToLogin: () -> Unit
 ) {
-    val authState        by viewModel.authState.collectAsState()
+    val authState by viewModel.authState
     var fullNameInput    by remember { mutableStateOf("") }
-    var usernameInput    by remember { mutableStateOf("") }
     var emailInput       by remember { mutableStateOf("") }
     var passwordInput    by remember { mutableStateOf("") }
     var confirmPassInput by remember { mutableStateOf("") }
 
     LaunchedEffect(authState) {
-        if (authState is MainViewModel.Success) {
-            onRegisterSuccess((authState as MainViewModel.Success).username)
+        if (authState is AuthState.Success) {
+            onRegisterSuccess((authState as AuthState.Success).user.name)
             viewModel.resetState()
         }
     }
 
     Column(modifier = Modifier.fillMaxSize()
         .verticalScroll(rememberScrollState())
-        .padding(dimensionResource(R.dimen.screenPadding)),
+        .padding(dimensionResource(R.dimen.padding_medium)),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally) {
 
-        Text(stringResource(R.string.label_register),
+        Text(stringResource(R.string.register_title),
             style = MaterialTheme.typography.headlineMedium,
             textAlign = TextAlign.Center)
-        Spacer(Modifier.height(dimensionResource(R.dimen.spacingLarge)))
+        Spacer(Modifier.height(dimensionResource(R.dimen.padding_large)))
 
         OutlinedTextField(value = fullNameInput,
             onValueChange = { fullNameInput = it },
-            label = { Text(stringResource(R.string.label_full_name)) },
+            label = { Text(stringResource(R.string.name_label)) },
             modifier = Modifier.fillMaxWidth(), singleLine = true)
-        Spacer(Modifier.height(dimensionResource(R.dimen.spacingMedium)))
-
-        OutlinedTextField(value = usernameInput,
-            onValueChange = { usernameInput = it },
-            label = { Text(stringResource(R.string.label_username)) },
-            modifier = Modifier.fillMaxWidth(), singleLine = true)
-        Spacer(Modifier.height(dimensionResource(R.dimen.spacingMedium)))
+        Spacer(Modifier.height(dimensionResource(R.dimen.padding_medium)))
 
         OutlinedTextField(value = emailInput,
             onValueChange = { emailInput = it },
-            label = { Text(stringResource(R.string.label_email)) },
+            label = { Text(stringResource(R.string.email_label)) },
             modifier = Modifier.fillMaxWidth(), singleLine = true,
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email))
-        Spacer(Modifier.height(dimensionResource(R.dimen.spacingMedium)))
+        Spacer(Modifier.height(dimensionResource(R.dimen.padding_medium)))
 
         OutlinedTextField(value = passwordInput,
             onValueChange = { passwordInput = it },
-            label = { Text(stringResource(R.string.label_password)) },
+            label = { Text(stringResource(R.string.password_label)) },
             modifier = Modifier.fillMaxWidth(), singleLine = true,
             visualTransformation = PasswordVisualTransformation(),
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password))
-        Spacer(Modifier.height(dimensionResource(R.dimen.spacingMedium)))
+        Spacer(Modifier.height(dimensionResource(R.dimen.padding_medium)))
 
         OutlinedTextField(value = confirmPassInput,
             onValueChange = { confirmPassInput = it },
-            label = { Text(stringResource(R.string.label_confirm_password)) },
+            label = { Text(stringResource(R.string.password_label) + " (Confirm)") },
             modifier = Modifier.fillMaxWidth(), singleLine = true,
             visualTransformation = PasswordVisualTransformation(),
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password))
-        Spacer(Modifier.height(dimensionResource(R.dimen.spacingSmall)))
+        Spacer(Modifier.height(dimensionResource(R.dimen.padding_small)))
 
-        if (authState is MainViewModel.Error) {
-            Text((authState as MainViewModel.Error).message,
+        if (authState is AuthState.Error) {
+            Text((authState as AuthState.Error).message,
                 color = MaterialTheme.colorScheme.error,
                 style = MaterialTheme.typography.bodySmall)
-            Spacer(Modifier.height(dimensionResource(R.dimen.spacingSmall)))
+            Spacer(Modifier.height(dimensionResource(R.dimen.padding_small)))
         }
 
         Button(onClick = {
-            viewModel.register(fullNameInput, usernameInput,
-                emailInput, passwordInput, confirmPassInput)
+            if (passwordInput == confirmPassInput && fullNameInput.isNotBlank() && emailInput.isNotBlank()) {
+                viewModel.register(fullNameInput, emailInput, passwordInput, "STUDENT")
+            }
         }, modifier = Modifier.fillMaxWidth()
-            .height(dimensionResource(R.dimen.buttonHeight)),
-            enabled = authState !is MainViewModel.Loading) {
-            if (authState is MainViewModel.Loading)
+            .height(dimensionResource(R.dimen.button_height)),
+            enabled = authState !is AuthState.Loading) {
+            if (authState is AuthState.Loading)
                 CircularProgressIndicator(
-                    size(24.dp),
+                    modifier = Modifier.size(24.dp),
                     color = MaterialTheme.colorScheme.onPrimary)
-            else Text(stringResource(R.string.btn_register))
+            else Text(stringResource(R.string.register_button))
         }
-        Spacer(Modifier.height(dimensionResource(R.dimen.spacingMedium)))
+        Spacer(Modifier.height(dimensionResource(R.dimen.padding_medium)))
         TextButton(onClick = { viewModel.resetState(); onNavigateToLogin() }) {
-            Text(stringResource(R.string.link_back_to_login))
+            Text(stringResource(R.string.already_account))
         }
     }
 }
