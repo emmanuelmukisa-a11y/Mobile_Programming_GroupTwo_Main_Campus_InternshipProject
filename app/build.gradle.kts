@@ -5,11 +5,11 @@ plugins {
 }
 
 android {
-    namespace = "com.ndejje.internee"
+    namespace = "com.ndejje.momo.ourinternship"
     compileSdk = 36
 
     defaultConfig {
-        applicationId = "com.ndejje.internee"
+        applicationId = "com.ndejje.momo.ourinternship"
         minSdk = 24
         targetSdk = 36
         versionCode = 1

@@ -1,81 +1,81 @@
 package com.ndejje.momo.ourinternship.ui.screens
 
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.text.input.PasswordVisualTransformation
-import androidx.compose.ui.text.style.TextAlign
-import com.ndejje.momo.ourinternship.ui.viewmodel.MainViewModel
+import androidx.compose.ui.unit.dp
+import com.ndejje.momo.ourinternship.R
+import com.ndejje.momo.ourinternship.ui.components.AppButton
+import com.ndejje.momo.ourinternship.ui.components.AppPasswordField
+import com.ndejje.momo.ourinternship.ui.components.AppTextField
+import com.ndejje.momo.ourinternship.ui.viewmodel.AuthState
 import com.ndejje.momo.ourinternship.ui.viewmodel.AuthViewModel
 
 @Composable
 fun LoginScreen(
     viewModel: AuthViewModel,
-    onLoginSuccess: (String) -> Unit,
-    onNavigateToRegister: () -> Unit
+    onNavigateToRegister: () -> Unit,
+    onLoginSuccess: (String) -> Unit
 ) {
-    val authState by viewModel.authState.collectAsState()
-    var usernameInput by remember { mutableStateOf("") }
-    var passwordInput by remember { mutableStateOf("") }
+    var email by remember { mutableStateOf("") }
+    var password by remember { mutableStateOf("") }
+    val authState by viewModel.authState
 
     LaunchedEffect(authState) {
-        if (authState is MainViewModel.Success) {
-            onLoginSuccess((authState as MainViewModel.Success).username)
-            viewModel.resetState()
+        if (authState is AuthState.Success) {
+            onLoginSuccess((authState as AuthState.Success).user.role)
         }
     }
 
     Column(
-        modifier = Modifier.fillMaxSize()
-            .padding(dimensionResource(R.dimen.screenPadding)),
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(dimensionResource(R.dimen.padding_large)),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
     ) {
-        Text(stringResource(R.string.label_login),
-            style = MaterialTheme.typography.headlineMedium,
-            textAlign = TextAlign.Center)
-        Spacer(Modifier.height(dimensionResource(R.dimen.spacingLarge)))
+        Text(
+            text = stringResource(R.string.login_title),
+            style = MaterialTheme.typography.headlineLarge,
+            modifier = Modifier.padding(bottom = dimensionResource(R.dimen.padding_large))
+        )
 
-        OutlinedTextField(value = usernameInput,
-            onValueChange = { usernameInput = it },
-            label = { Text(stringResource(R.string.label_username)) },
-            modifier = Modifier.fillMaxWidth(), singleLine = true)
-        Spacer(Modifier.height(dimensionResource(R.dimen.spacingMedium)))
+        AppTextField(
+            value = email,
+            onValueChange = { email = it },
+            labelRes = R.string.email_label
+        )
 
-        OutlinedTextField(value = passwordInput,
-            onValueChange = { passwordInput = it },
-            label = { Text(stringResource(R.string.label_password)) },
-            modifier = Modifier.fillMaxWidth(), singleLine = true,
-            visualTransformation = PasswordVisualTransformation(),
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password))
-        Spacer(Modifier.height(dimensionResource(R.dimen.spacingSmall)))
+        Spacer(modifier = Modifier.height(dimensionResource(R.dimen.padding_medium)))
 
-        if (authState is MainViewModel.Error) {
-            Text((authState as MainViewModel.Error).message,
+        AppPasswordField(
+            value = password,
+            onValueChange = { password = it },
+            labelRes = R.string.password_label
+        )
+
+        Spacer(modifier = Modifier.height(dimensionResource(R.dimen.padding_large)))
+
+        if (authState is AuthState.Error) {
+            Text(
+                text = (authState as AuthState.Error).message,
                 color = MaterialTheme.colorScheme.error,
-                style = MaterialTheme.typography.bodySmall)
-            Spacer(Modifier.height(dimensionResource(R.dimen.spacingSmall)))
+                modifier = Modifier.padding(bottom = dimensionResource(R.dimen.padding_medium))
+            )
         }
 
-        Button(onClick = { viewModel.login(usernameInput, passwordInput) },
-            modifier = Modifier.fillMaxWidth()
-                .height(dimensionResource(R.dimen.buttonHeight)),
-            enabled = authState !is MainViewModel.Loading) {
-            if (authState is MainViewModel.Loading)
-                CircularProgressIndicator(
-                    size(24.dp),
-                    color = MaterialTheme.colorScheme.onPrimary)
-            else Text(stringResource(R.string.btn_login))
-        }
-        Spacer(Modifier.height(dimensionResource(R.dimen.spacingMedium)))
+        AppButton(
+            onClick = { viewModel.login(email, password) },
+            textRes = R.string.login_button,
+            enabled = authState !is AuthState.Loading
+        )
+
         TextButton(onClick = onNavigateToRegister) {
-            Text(stringResource(R.string.link_register))
+            Text(stringResource(R.string.no_account))
         }
     }
 }
