@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Internee</string>
+    <string name="app_name">Intern</string>
     <string name="login_title">Login</string>
     <string name="register_title">Register</string>
     <string name="email_label">Email</string>
